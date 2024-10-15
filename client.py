@@ -3,6 +3,7 @@ import time
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from tkinter import ttk
 
 
 def send_file(ip_version, server_address, port, file_path, results_label):
@@ -61,48 +62,108 @@ def run_client(ip_version, server_address, port, file_path_entry, results_label)
 
 def create_gui():
     root = tk.Tk()
-    root.title("File Transfer System")
+    root.title("Dual Stack File Transfer System")
 
-    # Server address (localhost for simplicity)
-    ipv4_server = "127.0.0.1"
-    ipv6_server = "::1"
-    port = 12345
+    # Set a consistent color scheme
+    background_color = "#f0f4f7"  # Light blue-gray
+    button_color = "#5078f0"  # Nice blue for buttons
+    text_color = "#000000"  # Black for text
+    root.configure(bg=background_color)
+
+    # Set default font style
+    default_font = ("Helvetica", 11)
+
+    # Frame to hold everything
+    frame = tk.Frame(root, bg=background_color, padx=20, pady=20)
+    frame.grid(row=0, column=0, padx=10, pady=10)
+
+    # Title label
+    title_label = tk.Label(
+        frame,
+        text="Dual Stack File Transfer System",
+        font=("Helvetica", 16, "bold"),
+        bg=background_color,
+        fg=text_color,
+    )
+    title_label.grid(row=0, column=0, columnspan=3, pady=10)
 
     # File path input
-    tk.Label(root, text="File Path:").grid(row=0, column=0, padx=10, pady=10)
-    file_path_entry = tk.Entry(root, width=40)
-    file_path_entry.grid(row=0, column=1, padx=10, pady=10)
-    tk.Button(root, text="Browse", command=lambda: browse_file(file_path_entry)).grid(
-        row=0, column=2, padx=10, pady=10
+    tk.Label(
+        frame, text="File Path:", font=default_font, bg=background_color, fg=text_color
+    ).grid(row=1, column=0, padx=10, pady=10)
+    file_path_entry = ttk.Entry(frame, width=40, font=default_font)
+    file_path_entry.grid(row=1, column=1, padx=10, pady=10)
+    browse_button = tk.Button(
+        frame,
+        text="Browse",
+        command=lambda: browse_file(file_path_entry),
+        bg=button_color,
+        fg="white",
+        font=default_font,
     )
+    browse_button.grid(row=1, column=2, padx=10, pady=10)
 
     # IP version selection
-    tk.Label(root, text="IP Version:").grid(row=1, column=0, padx=10, pady=10)
+    tk.Label(
+        frame, text="IP Version:", font=default_font, bg=background_color, fg=text_color
+    ).grid(row=2, column=0, padx=10, pady=10)
     ip_version_var = tk.StringVar(value="IPv4")
-    tk.Radiobutton(root, text="IPv4", variable=ip_version_var, value="IPv4").grid(
-        row=1, column=1, padx=10, pady=10, sticky="w"
+    ipv4_radio = tk.Radiobutton(
+        frame,
+        text="IPv4",
+        variable=ip_version_var,
+        value="IPv4",
+        font=default_font,
+        bg=background_color,
+        fg=text_color,
+        selectcolor=background_color,
     )
-    tk.Radiobutton(root, text="IPv6", variable=ip_version_var, value="IPv6").grid(
-        row=1, column=2, padx=10, pady=10, sticky="w"
+    ipv4_radio.grid(row=2, column=1, padx=10, pady=10, sticky="w")
+    ipv6_radio = tk.Radiobutton(
+        frame,
+        text="IPv6",
+        variable=ip_version_var,
+        value="IPv6",
+        font=default_font,
+        bg=background_color,
+        fg=text_color,
+        selectcolor=background_color,
     )
+    ipv6_radio.grid(row=2, column=2, padx=10, pady=10, sticky="w")
 
     # Results label
-    results_label = tk.Label(root, text="", fg="green", justify="left")
-    results_label.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
+    results_label = tk.Label(
+        frame,
+        text="",
+        fg="green",
+        justify="left",
+        bg=background_color,
+        font=default_font,
+    )
+    results_label.grid(row=4, column=0, columnspan=3, padx=10, pady=10)
 
     # Run test button
-    tk.Button(
-        root,
+    send_button = tk.Button(
+        frame,
         text="Send File",
         command=lambda: run_client(
             ip_version_var.get(),
-            ipv4_server if ip_version_var.get() == "IPv4" else ipv6_server,
-            port,
+            "127.0.0.1" if ip_version_var.get() == "IPv4" else "::1",
+            12345,
             file_path_entry,
             results_label,
         ),
-    ).grid(row=2, column=0, columnspan=3, padx=10, pady=10)
+        bg=button_color,
+        fg="white",
+        font=default_font,
+    )
+    send_button.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
 
+    # Adding padding around all widgets
+    for widget in frame.winfo_children():
+        widget.grid_configure(padx=5, pady=5)
+
+    # Start the GUI
     root.mainloop()
 
 
