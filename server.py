@@ -1,42 +1,27 @@
 import socket
+import threading
 
-
-def receive_file(port, filename):
-    # Create a dual-stack socket (AF_INET6) for both IPv6 and IPv4
-    server_socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-
-    # Allow both IPv4 and IPv6 connections
-    server_socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
-
-    # Bind to the IPv6 wildcard address (which also handles IPv4)
-    server_socket.bind(("::", port))
-
-    # Start listening for incoming connections
-    server_socket.listen(1)
-    print(f"Server listening on port {port} (IPv4 and IPv6)")
-
-    # Accept incoming client connections
-    client_socket, addr = server_socket.accept()
-    print(f"Connected to {addr}")
-
-    # Open a file to write the received data
-    with open(filename, "wb") as f:
+def handle_client(client_socket):
+    with open("received_file.txt", 'wb') as file:
         while True:
-            # Receive data in chunks
-            data = client_socket.recv(1024)
+            data = client_socket.recv(4096)
             if not data:
                 break
-            f.write(data)
-            print("Receiving...")
-
-    print(f"File '{filename}' received successfully.")
-
-    # Close connections
+            file.write(data)
     client_socket.close()
-    server_socket.close()
 
+def start_server(ip_version, address, port):
+    family = socket.AF_INET if ip_version == 'IPv4' else socket.AF_INET6
+    server_socket = socket.socket(family, socket.SOCK_STREAM)
+    server_socket.bind((address, port))
+    server_socket.listen(5)
+    print(f"Server listening on {address}:{port} ({ip_version})")
 
-# Example usage
-port = 12345
-filename = "received_file.txt"
-receive_file(port, filename)
+    while True:
+        client_socket, addr = server_socket.accept()
+        print(f"Accepted connection from {addr}")
+        threading.Thread(target=handle_client, args=(client_socket,)).start()
+
+# Start the server for both IPv4 and IPv6 using localhost
+threading.Thread(target=start_server, args=('IPv4', '127.0.0.1', 12345)).start()
+threading.Thread(target=start_server, args=('IPv6', '::1', 12345)).start()
