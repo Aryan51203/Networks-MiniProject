@@ -82,7 +82,7 @@ def plot_times():
 
 def create_gui():
     root = tk.Tk()
-    root.title("File Transfer System (Multi-File Support)")
+    root.title("Dual Stack File Transfer System")
     
     background_color = "#f0f4f7"
     button_color = "#5078f0"
@@ -94,7 +94,7 @@ def create_gui():
     frame = tk.Frame(root, bg=background_color, padx=20, pady=20)
     frame.grid(row=0, column=0, padx=10, pady=10)
 
-    title_label = tk.Label(frame, text="File Transfer System", font=("Helvetica", 16, "bold"), bg=background_color, fg=text_color)
+    title_label = tk.Label(frame, text="Dual Stack File Transfer System", font=("Helvetica", 16, "bold"), bg=background_color, fg=text_color)
     title_label.grid(row=0, column=0, columnspan=3, pady=10)
 
     tk.Label(frame, text="Files:", font=default_font, bg=background_color, fg=text_color).grid(row=1, column=0, padx=10, pady=10)
